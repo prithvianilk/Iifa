@@ -10,17 +10,12 @@ function Flow() {
   const [edges, setEdges] = useState<Edge[]>([]);
 
   useState(() => {
-    const nodes: Node[] = [
-      {
-        id: '1',
-        position: { x: 0, y: 0 },
-        data: { label: 'Hello' },
-      },
-    ];
     fetch("http://localhost:8080/dt")
       .then(resp => resp.json())
-      .then(resp => {
-        console.log(resp);
+      .then(({ nodes, edges }) => {
+        console.log(nodes, edges);
+        setNodes(nodes);
+        setEdges(edges);
       });
     setNodes(nodes);
   });
