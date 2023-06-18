@@ -1,0 +1,39 @@
+{
+    "description": "Is application time valid?",
+    "predicate": {
+        "AppliedBeforeDeadline": {
+            "application_deadline": "2023-06-01 00:00:00"
+        }
+    },
+    "left": {
+        "value": "Application is in the future"
+    },
+    "right": {
+        "description": "Is salary above 10,000?",
+        "predicate": {
+            "SalaryAbove": {
+                "min_salary": 10000
+            }
+        },
+        "left": {
+            "predicate": {
+                "InGoodOccupations": {
+                    "occupations": [
+                        "software",
+                        "medicine",
+                        "law"
+                    ]
+                }
+            },
+            "right": {
+                "value": "Application accepted due to high potential future salary"
+            },
+            "left": {
+                "value": "Application rejected"
+            }
+        },
+        "right": {
+            "value": "Application accepted due to high salary"
+        }
+    }
+}
