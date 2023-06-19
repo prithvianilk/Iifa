@@ -2,6 +2,8 @@
 
 - Experimenting with decision trees for creating, editing and maintaining complex conditionals and rule enginess.
 - Also, rust gang gang
+<img width="1387" alt="Screenshot 2023-06-19 at 2 41 50 PM" src="https://github.com/prithvianilk/Iifa/assets/56789402/f049ee14-0579-403f-b624-cb6ade7ca27d">
+ 
 
 # functionals
 - Read DT
