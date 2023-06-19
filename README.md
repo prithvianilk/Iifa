@@ -1,4 +1,4 @@
-# dt
+# lifa
 
 - Experimenting with decision trees for creating, editing and maintaining complex conditionals and rule enginess.
 - Also, rust gang gang
@@ -18,3 +18,7 @@
 # DAO layer
 - get DT
 - save DT
+
+# TODO
+- [ ] Make it non domain specific, use `json path`
+- [ ] Make it a platform?
