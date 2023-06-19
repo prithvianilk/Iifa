@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use crate::customer_params::CustomerParams;
 use crate::predicate::{Predicate, evaluate};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Node {
     #[serde(default)]
     pub description: String,
@@ -31,9 +31,9 @@ impl Node {
 
     pub fn link(&mut self, node: Node, is_left: bool) {
         if is_left {
-            self.left = Some(Box::new(node))
+            self.left = Some(Box::new(node.clone()))
         } else {
-            self.right = Some(Box::new(node))
+            self.right = Some(Box::new(node.clone()))
         }
     }
 

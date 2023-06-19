@@ -7,18 +7,21 @@ mod customer_params;
 mod predicate;
 mod services;
 
-use services::{get, save, evaluate};
+use services::{get, save, evaluate, get_as_flow, save_from_flow};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let cors = Cors::default().supports_credentials();
     HttpServer::new(move || {
         App::new()
             .wrap(
                 Cors::default()
-                    // Customize CORS options if needed
                     .allow_any_origin()
+                    .allow_any_method()
+                    .allow_any_header() 
+                    .supports_credentials()
             )
+            .service(get_as_flow)
+            .service(save_from_flow)
             .service(get)
             .service(save)
             .service(evaluate)

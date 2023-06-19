@@ -1,7 +1,7 @@
 use chrono::{Local, TimeZone};
 use crate::customer_params::CustomerParams;
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, serde::Deserialize, serde::Serialize, Clone)]
 pub enum Predicate {
     AppliedBeforeDeadline{application_deadline: String},
     SalaryAbove{min_salary: i32},
