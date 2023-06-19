@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import './index.css';
 import ReactFlow, { Controls, Background, Node, applyNodeChanges, applyEdgeChanges, NodeChange, EdgeChange, Edge, addEdge } from 'reactflow';
 import 'reactflow/dist/style.css';
+import iifaClient from './lib/iifa.client';
 
 declare global {
   interface Window {
@@ -12,7 +13,7 @@ declare global {
 type Predicate = "AppliedBeforeDeadline" | "SalaryAbove" | "AgeAbove";
 const predicates: Predicate[] = ["AppliedBeforeDeadline", "SalaryAbove", "AgeAbove"];
 
-function Flow() {
+function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const onConnect = useCallback(
@@ -20,58 +21,27 @@ function Flow() {
     [setEdges]
   );
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
+  const [selectedEdgeDirection, setSelectedEdgeDirection] = useState<string>("");
+  const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
+  const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
 
   const [description, setDescription] = useState<string>("");
-  const [selectedEdgeDirection, setSelectedEdgeDirection] = useState<string>("");
   const [isPredicate, setIsPredicate] = useState<boolean>(false);
   const [predicateType, setPredicateType] = useState<Predicate>('AgeAbove');
   const [predicateData, setPredicateData] = useState<{ [x: string]: any }>({});
   const [value, setValue] = useState<string | null>(null);
   const [customerParams, setCustomerParams] = useState<string>("");
 
-  const saveDt = () => {
-    fetch('http://localhost:8080/react-flow/dt', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        nodes,
-        edges
-      }),
-    })
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(console.log);
-  }
-
-  const evaluate = () => {
-    fetch('http://localhost:8080/dt/evaluate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: customerParams,
-    })
-      .then(response => response.json())
-      .then(data => alert(data.result))
-      .catch(alert);
-  }
-
+  const saveDt = () => iifaClient.saveDecisionTree(nodes, edges);
+  const evaluate = () => iifaClient.evaluate(customerParams);
 
   useState(() => {
-    fetch("http://localhost:8080/react-flow/dt")
-      .then(resp => resp.json())
+    iifaClient.getDecisionTree()
       .then(({ nodes, edges }) => {
-        console.log(nodes, edges);
         setNodes(nodes);
         setEdges(edges);
-      });
-    setNodes(nodes);
+      })
   });
-
-  const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
-  const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
 
   const handleEdgeClick = (_: any, edge: Edge) => {
     setSelectedEdgeDirection(edge.label as string);
@@ -95,26 +65,27 @@ function Flow() {
         </ReactFlow>
       </div>
       <div className='p-2 h-screen w-1/5'>
-        <div>
+        <div className='my-2'>
           <label>Description</label>
-          <input type="text" placeholder="Type here" className="input w-full max-w-xs" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <input type="text" placeholder="Type here" className="input mt-3 w-full max-w-xs" value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
-        <div>
+        <div className='my-2'>
           <label>Predicate?</label>
           <br />
-          <input type="checkbox" className="toggle" checked={isPredicate} onClick={() => setIsPredicate(!isPredicate)} />
+          <input type="checkbox" className="toggle mt-3" checked={isPredicate} onClick={() => setIsPredicate(!isPredicate)} />
         </div>
         {isPredicate ? (
-          <div>
+          <div className='my-2'>
             <select className="select w-full max-w-xs"
               onChange={(e) => {
                 const selectedValue = e.currentTarget.value;
                 setPredicateType(selectedValue as Predicate);
-              }} value={predicateType}>
+              }}
+              value={predicateType}>
               <option disabled selected >Predicate Type</option>
-              {predicates.map(value => (<option>{value}</option>))}
+              {predicates.map((value, optionId) => (<option key={`option-${optionId}`}>{value}</option>))}
             </select>
-            <div>
+            <div className='mt-3'>
               {predicateType === 'AgeAbove' && (
                 <div>
                   <label>Min Age</label>
@@ -136,9 +107,9 @@ function Flow() {
             </div>
           </div>
         ) : (
-          <div>
+          <div className='my-2'>
             <label>Value</label>
-            <input type="text" placeholder="Type here" className="input w-full max-w-xs" value={value || ""} onChange={(e) => setValue(e.target.value)} />
+            <input type="text" placeholder="Type here" className="input mt-3 w-full max-w-xs" value={value || ""} onChange={(e) => setValue(e.target.value)} />
           </div>
         )}
 
@@ -147,12 +118,12 @@ function Flow() {
           if (isPredicate) {
             defaultNode = { predicate: { [predicateType]: predicateData } }
           } else {
-            defaultNode = { predicate: "DEFAULT" }
+            defaultNode = { predicate: "DEFAULT", value }
           }
           setNodes([...nodes, {
             id: (nodes.length * 100).toString(),
             position: { x: 0, y: -100 },
-            data: { ...defaultNode, label: description, value, description }
+            data: { ...defaultNode, label: description, description }
           }]);
           setDescription("");
           setValue("");
@@ -162,7 +133,7 @@ function Flow() {
           Create Node
         </button>
         <button className="mt-10 btn w-full" onClick={saveDt}>
-          Save
+          Save Tree
         </button>
         <textarea className="textarea mt-10 w-full" placeholder="" value={customerParams} onChange={e => setCustomerParams(e.target.value)} />
         <button className="mt-10 btn w-full" onClick={evaluate}>
@@ -184,11 +155,6 @@ function Flow() {
       </dialog>
     </div >
   );
-}
-
-
-function App() {
-  return <Flow />;
 }
 
 export default App;
