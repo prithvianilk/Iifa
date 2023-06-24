@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::customer_params::CustomerParams;
+use crate::domain::customer_params::CustomerParams;
 use crate::domain::predicate::{Predicate, evaluate};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

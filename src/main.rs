@@ -1,23 +1,27 @@
 use actix_web::{HttpServer, App, web};
 use actix_cors::Cors;
 
-mod dt_dao;
-mod customer_params;
-mod controllers;
+mod controller {
+    pub mod react_flow_controller;
+    pub mod dt_controller;
+}
 mod domain {
     pub mod node;
     pub mod predicate;
+    pub mod customer_params;
 }
 mod service {
     pub mod react_flow_service;
     pub mod dt_service;
+    pub mod dt_dao;
 }
 mod dto {
     pub mod react_flow_dtos;
 }
 mod app_data;
 
-use controllers::{get, save, evaluate, get_as_flow, save_from_flow};
+use controller::react_flow_controller::{get_as_flow, save_from_flow};
+use controller::dt_controller::{get, save, evaluate};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

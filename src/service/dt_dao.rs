@@ -1,8 +1,8 @@
-use std::{fs::File};
+use std::fs::File;
 use std::io::{Read, Write};
 use crate::domain::node::Node;
 
-// TODO: Remove when its a platform
+// TODO: Remove when its a platform :)
 const DT_FILE_PATH: &'static str = "dt.json";
 
 #[derive(Clone, Copy)]

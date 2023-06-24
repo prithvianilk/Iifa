@@ -1,5 +1,5 @@
-use crate::dt_dao::DtDao;
 use crate::domain::node::Node;
+use crate::service::dt_dao::DtDao;
 
 #[derive(Clone, Copy)]
 pub struct DtService {

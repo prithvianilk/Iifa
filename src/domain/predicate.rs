@@ -1,5 +1,5 @@
 use chrono::{Local, TimeZone};
-use crate::customer_params::CustomerParams;
+use crate::domain::customer_params::CustomerParams;
 
 #[derive(Debug, serde::Deserialize, serde::Serialize, Clone)]
 pub enum Predicate {
