@@ -1,18 +1,29 @@
-use actix_web::{HttpServer, App};
+use actix_web::{HttpServer, App, web};
 use actix_cors::Cors;
 
-mod node;
 mod dt_dao;
 mod customer_params;
-mod predicate;
-mod services;
+mod controllers;
+mod domain {
+    pub mod node;
+    pub mod predicate;
+}
+mod service {
+    pub mod react_flow_service;
+    pub mod dt_service;
+}
+mod dto {
+    pub mod react_flow_dtos;
+}
+mod app_data;
 
-use services::{get, save, evaluate, get_as_flow, save_from_flow};
+use controllers::{get, save, evaluate, get_as_flow, save_from_flow};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
+            .app_data(web::Data::new(app_data::get_app_data()))
             .wrap(
                 Cors::default()
                     .allow_any_origin()

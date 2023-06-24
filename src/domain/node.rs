@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use crate::customer_params::CustomerParams;
-use crate::predicate::{Predicate, evaluate};
+use crate::domain::predicate::{Predicate, evaluate};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Node {
