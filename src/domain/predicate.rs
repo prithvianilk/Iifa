@@ -7,7 +7,7 @@ pub enum Predicate {
     LTNumber{lhs: String, rhs: String},
     GTNumber{lhs: String, rhs: String},
     EQNumber{lhs: String, rhs: String},
-    EqString{lhs: String, rhs: String},
+    EQString{lhs: String, rhs: String},
     InListOfString{lhs: String, rhs: String},
     Default
 }
@@ -21,8 +21,8 @@ pub fn evaluate(predicate: &Predicate, input_params: &Value, context: &Value) ->
         Predicate::LTNumber { lhs, rhs } => lt::<f64>(lhs, rhs, input_params, context),
         Predicate::GTNumber { lhs, rhs } => gt::<f64>(lhs, rhs, input_params, context),
         Predicate::EQNumber { lhs, rhs } => eq::<f64>(lhs, rhs, input_params, context),
-        Predicate::EqString { lhs, rhs } => eq::<String>(lhs, rhs, input_params, context),
-        Predicate::InListOfString { lhs, rhs } => in_list_of_string::<String>(lhs, rhs, input_params, context),
+        Predicate::EQString { lhs, rhs } => eq::<String>(lhs, rhs, input_params, context),
+        Predicate::InListOfString { lhs, rhs } => list_contains::<String>(lhs, rhs, input_params, context),
         Predicate::Default => panic!("Default predicate can't be evaluated"),
     }
 }
@@ -48,7 +48,7 @@ where T: std::cmp::PartialOrd, T: DeserializeOwned {
    lhs_value == rhs_value
 }
 
-fn in_list_of_string<T>(lhs: &String, rhs: &String, input_params: &Value, context: &Value) -> bool
+fn list_contains<T>(lhs: &String, rhs: &String, input_params: &Value, context: &Value) -> bool
 where T: std::cmp::PartialOrd, T: DeserializeOwned {
    let lhs_value = &evaluate_path::<T>(lhs, input_params);
    let rhs_value =  &evaluate_path::<Vec<T>>(rhs, context);
