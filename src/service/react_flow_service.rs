@@ -16,7 +16,6 @@ impl ReactFlowService {
         let mut nodes: Vec<FlowNode> = Vec::new();
         let mut edges: Vec<FlowEdge>= Vec::new();
         self.populate_nodes_and_edges(&root, 1, &mut nodes, &mut edges);
-        println!();
         Graph{nodes, edges}
     }
 

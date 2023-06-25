@@ -1,6 +1,7 @@
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::Write;
 use crate::domain::node::Node;
+use crate::util::file_util::read_file;
 
 // TODO: Remove when its a platform :)
 const DT_FILE_PATH: &'static str = "dt.json";
@@ -10,12 +11,7 @@ pub struct DtDao {}
 
 impl DtDao {
     pub fn get_root(&self) -> Node {
-        let mut contents = String::new();
-        let mut file = File::open(DT_FILE_PATH).expect("Failed to open file");
-        file.read_to_string(&mut contents).expect("Failed to read file");
-        let value: Node = serde_json::from_str(&contents).expect("Failed to deserialize JSON");
-        drop(file);
-        value
+        read_file(&DT_FILE_PATH.to_string())
     }
 
     pub fn save_dt(&self, root: &Node) {

@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::domain::customer_params::CustomerParams;
+use serde_json::Value;
 use crate::domain::predicate::{Predicate, evaluate};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -26,7 +26,7 @@ impl Node {
     }
 
     pub fn new_terminal(value: String) -> Node {
-        Self { description: String::new(), predicate: Predicate::DEFAULT, value: Some(value), left: None, right: None }
+        Self { description: String::new(), predicate: Predicate::Default, value: Some(value), left: None, right: None }
     }
 
     pub fn link(&mut self, node: Node, is_left: bool) {
@@ -37,17 +37,17 @@ impl Node {
         }
     }
 
-    pub fn traverse(&mut self, customer_params: &CustomerParams) -> Option<String> {
+    pub fn traverse(&mut self, customer_params: &Value, context: &Value) -> Option<String> {
         let is_terminal = self.value.is_some();
         return if is_terminal {
             self.value.clone()
-        } else if evaluate(&self.predicate, customer_params) {
+        } else if evaluate(&self.predicate, customer_params, context) {
             self.right.as_mut()
-                .map(|c| c.traverse(customer_params))
+                .map(|c| c.traverse(customer_params, context))
                 .unwrap_or(None)
         } else {
             self.left.as_mut()
-                .map(|c| c.traverse(customer_params))
+                .map(|c| c.traverse(customer_params, context))
                 .unwrap_or(None)
         };
     }

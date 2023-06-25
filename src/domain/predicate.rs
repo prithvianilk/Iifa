@@ -1,27 +1,63 @@
 use chrono::{Local, TimeZone};
-use crate::domain::customer_params::CustomerParams;
+use serde::{Serialize, Deserialize, de::DeserializeOwned};
+use serde_json::{Value, from_value};
 
-#[derive(Debug, serde::Deserialize, serde::Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub enum Predicate {
-    AppliedBeforeDeadline{application_deadline: String},
-    SalaryAbove{min_salary: i32},
-    AgeAbove{min_age: i8},
-    InGoodOccupations{occupations: Vec<String>},
-    DEFAULT
+    LTNumber{lhs: String, rhs: String},
+    GTNumber{lhs: String, rhs: String},
+    EQNumber{lhs: String, rhs: String},
+    EqString{lhs: String, rhs: String},
+    InListOfString{lhs: String, rhs: String},
+    Default
 }
 
 impl Default for Predicate {
-    fn default() -> Self { Predicate::DEFAULT }
+    fn default() -> Self { Predicate::Default }
 }
 
-pub fn evaluate(predicate: &Predicate, customer_params: &CustomerParams) -> bool {
+pub fn evaluate(predicate: &Predicate, input_params: &Value, context: &Value) -> bool {
     match predicate {
-        Predicate::AppliedBeforeDeadline{application_deadline} => is_date_before(&customer_params.application_time, application_deadline),
-        Predicate::SalaryAbove { min_salary } => &customer_params.salary >= min_salary,
-        Predicate::AgeAbove { min_age } =>  &customer_params.age >= min_age,
-        Predicate::InGoodOccupations { occupations } => occupations.contains(&customer_params.occupation),
-        Predicate::DEFAULT => panic!("Default predicate"),
+        Predicate::LTNumber { lhs, rhs } => lt::<f64>(lhs, rhs, input_params, context),
+        Predicate::GTNumber { lhs, rhs } => gt::<f64>(lhs, rhs, input_params, context),
+        Predicate::EQNumber { lhs, rhs } => eq::<f64>(lhs, rhs, input_params, context),
+        Predicate::EqString { lhs, rhs } => eq::<String>(lhs, rhs, input_params, context),
+        Predicate::InListOfString { lhs, rhs } => in_list_of_string::<String>(lhs, rhs, input_params, context),
+        Predicate::Default => panic!("Default predicate can't be evaluated"),
     }
+}
+
+fn lt<T>(lhs: &String, rhs: &String, input_params: &Value, context: &Value) -> bool
+where T: std::cmp::PartialOrd, T: DeserializeOwned {
+   let lhs_value = &evaluate_path::<T>(lhs, input_params);
+   let rhs_value =  &evaluate_path::<T>(rhs, context);
+   lhs_value < rhs_value
+}
+
+fn gt<T>(lhs: &String, rhs: &String, input_params: &Value, context: &Value) -> bool
+where T: std::cmp::PartialOrd, T: DeserializeOwned {
+   let lhs_value = &evaluate_path::<T>(lhs, input_params);
+   let rhs_value =  &evaluate_path::<T>(rhs, context);
+   lhs_value > rhs_value
+}
+
+fn eq<T>(lhs: &String, rhs: &String, input_params: &Value, context: &Value) -> bool
+where T: std::cmp::PartialOrd, T: DeserializeOwned {
+   let lhs_value = &evaluate_path::<T>(lhs, input_params);
+   let rhs_value =  &evaluate_path::<T>(rhs, context);
+   lhs_value == rhs_value
+}
+
+fn in_list_of_string<T>(lhs: &String, rhs: &String, input_params: &Value, context: &Value) -> bool
+where T: std::cmp::PartialOrd, T: DeserializeOwned {
+   let lhs_value = &evaluate_path::<T>(lhs, input_params);
+   let rhs_value =  &evaluate_path::<Vec<T>>(rhs, context);
+   rhs_value.iter().find(|x| *x == lhs_value).is_some()
+}
+
+fn evaluate_path<T>(path: &String, context: &Value) -> T where T: DeserializeOwned {
+    let value = context.pointer(&path).unwrap().clone();
+    from_value(value).unwrap()
 }
 
 fn is_date_before(x: &String, y: &String) -> bool {
