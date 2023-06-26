@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import './index.css';
 import ReactFlow, { Controls, Background, Node, applyNodeChanges, applyEdgeChanges, NodeChange, EdgeChange, Edge, addEdge } from 'reactflow';
 import 'reactflow/dist/style.css';
-import iifaClient from './lib/iifa.client';
+import whompingWillowClient from './lib/whompingWillow.client';
 
 declare global {
   interface Window {
@@ -10,8 +10,10 @@ declare global {
   }
 }
 
-type Predicate = "AppliedBeforeDeadline" | "SalaryAbove" | "AgeAbove";
-const predicates: Predicate[] = ["AppliedBeforeDeadline", "SalaryAbove", "AgeAbove"];
+type Predicate = "LTNumber" | "GTNumber" | "EQNumber" | "EQString" | "InListOfString";
+const predicates: Predicate[] = ["LTNumber", "GTNumber", "EQNumber", "EQString", "InListOfString"];
+
+const defaultPredicateData = { lhs: "", rhs: "" };
 
 function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -27,16 +29,16 @@ function App() {
 
   const [description, setDescription] = useState<string>("");
   const [isPredicate, setIsPredicate] = useState<boolean>(false);
-  const [predicateType, setPredicateType] = useState<Predicate>('AgeAbove');
-  const [predicateData, setPredicateData] = useState<{ [x: string]: any }>({});
+  const [predicateType, setPredicateType] = useState<Predicate>("LTNumber");
+  const [predicateData, setPredicateData] = useState<{ [x: string]: any }>(defaultPredicateData);
   const [value, setValue] = useState<string | null>(null);
   const [customerParams, setCustomerParams] = useState<string>("");
 
-  const saveDt = () => iifaClient.saveDecisionTree(nodes, edges);
-  const evaluate = () => iifaClient.evaluate(customerParams);
+  const saveDt = () => whompingWillowClient.saveDecisionTree(nodes, edges);
+  const evaluate = () => whompingWillowClient.evaluate(customerParams);
 
   useState(() => {
-    iifaClient.getDecisionTree()
+    whompingWillowClient.getDecisionTree()
       .then(({ nodes, edges }) => {
         setNodes(nodes);
         setEdges(edges);
@@ -86,24 +88,14 @@ function App() {
               {predicates.map((value, optionId) => (<option key={`option-${optionId}`}>{value}</option>))}
             </select>
             <div className='mt-3'>
-              {predicateType === 'AgeAbove' && (
-                <div>
-                  <label>Min Age</label>
-                  <input type="text" placeholder="Type here" className="input w-full max-w-xs" value={predicateData.min_age} onChange={(e) => setPredicateData({ "min_age": Number.parseInt(e.target.value) })} />
-                </div>
-              )}
-              {predicateType === 'SalaryAbove' && (
-                <div>
-                  <label>Min Salary</label>
-                  <input type="text" placeholder="Type here" className="input w-full max-w-xs" value={predicateData.min_salary} onChange={(e) => setPredicateData({ "min_salary": Number.parseInt(e.target.value) })} />
-                </div>
-              )}
-              {predicateType === 'AppliedBeforeDeadline' && (
-                <div>
-                  <label>Deadline</label>
-                  <input type="text" placeholder="Type here" className="input w-full max-w-xs" value={predicateData.application_deadline} onChange={(e) => setPredicateData({ "application_deadline": e.target.value })} />
-                </div>
-              )}
+              <div>
+                <label>LHS</label>
+                <input type="text" placeholder="Type here" className="input w-full max-w-xs" value={predicateData.lhs} onChange={(e) => setPredicateData({ ...predicateData, "lhs": e.target.value })} />
+              </div>
+              <div className='mt-5'>
+                <label>RHS</label>
+                <input type="text" placeholder="Type here" className="input w-full max-w-xs" value={predicateData.rhs} onChange={(e) => setPredicateData({ ...predicateData, "rhs": e.target.value })} />
+              </div>
             </div>
           </div>
         ) : (
@@ -118,7 +110,7 @@ function App() {
           if (isPredicate) {
             defaultNode = { predicate: { [predicateType]: predicateData } }
           } else {
-            defaultNode = { predicate: "DEFAULT", value }
+            defaultNode = { predicate: "Default", value }
           }
           setNodes([...nodes, {
             id: (nodes.length * 100).toString(),
@@ -128,7 +120,7 @@ function App() {
           setDescription("");
           setValue("");
           setIsPredicate(false);
-          setPredicateData({});
+          setPredicateData(defaultPredicateData);
         }}>
           Create Node
         </button>
