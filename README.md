@@ -7,8 +7,9 @@
 - The project is a wip rn.
 - Also, rust gang gang.
 
-<img width="1387" alt="Screenshot 2023-06-19 at 2 41 50 PM" src="https://github.com/prithvianilk/Iifa/assets/56789402/f049ee14-0579-403f-b624-cb6ade7ca27d">
- 
+### Decision Tree for a bank application
+<img width="1717" alt="Screenshot 2023-06-26 at 4 29 12 AM" src="https://github.com/prithvianilk/whomping-willow/assets/56789402/b0ef695c-b00c-431b-a6cf-7314049195c2">
+
 # whomping-willow as a platform
 - User can CRUD on DTs
 - Each DT also has context, that can be updated or fetched externally
