@@ -31,8 +31,8 @@ async function saveDecisionTree(nodes: Node[], edges: Edge[]) {
 
 
 async function getDecisionTree() {
-    return await fetch("http://localhost:8080/react-flow/dt").
-        then(resp => resp.json());
+    return await fetch("http://localhost:8080/react-flow/dt")
+        .then(resp => resp.json());
 }
 
 export default { evaluate, saveDecisionTree, getDecisionTree };

@@ -14,5 +14,5 @@ pub async fn save_from_flow(request: web::Json<Graph>, data: web::Data<AppData>)
     let graph = request.0;
     let react_flow_service = &data.react_flow_service;
     react_flow_service.save_graph_as_dt(&graph);
-    HttpResponse::Created()
+    HttpResponse::Created().json("{}")
 }
