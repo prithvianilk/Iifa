@@ -1,7 +1,10 @@
-import { Node, Edge } from "reactflow";
+import DecisionTree, { Graph } from "./DecisionTree";
+
+const whompingWillowServiceBaseUrl = "http://localhost:8080";
 
 async function evaluate(customerParams: string) {
-    await fetch('http://localhost:8080/dt/evaluate', {
+    const url = `${whompingWillowServiceBaseUrl}/dt/evaluate`;
+    await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -13,16 +16,14 @@ async function evaluate(customerParams: string) {
         .catch(alert);
 }
 
-async function saveDecisionTree(nodes: Node[], edges: Edge[]) {
-    await fetch('http://localhost:8080/react-flow/dt', {
+async function saveDecisionTreeFromFlow(decisionTree: DecisionTree) {
+    const url = `${whompingWillowServiceBaseUrl}/react-flow/decision_trees`;
+    await fetch(url, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            nodes,
-            edges
-        }),
+        body: JSON.stringify(decisionTree),
     })
         .then(response => response.json())
         .then(data => console.log(data))
@@ -30,9 +31,9 @@ async function saveDecisionTree(nodes: Node[], edges: Edge[]) {
 }
 
 
-async function getDecisionTree() {
-    return await fetch("http://localhost:8080/react-flow/dt")
-        .then(resp => resp.json());
+async function getDecisionTreeAsFlow(_id: String): Promise<Graph> {
+    const url = `${whompingWillowServiceBaseUrl}/react-flow/decision_trees/${_id}`;
+    return await fetch(url).then(resp => resp.json());
 }
 
-export default { evaluate, saveDecisionTree, getDecisionTree };
+export default { evaluate, saveDecisionTree: saveDecisionTreeFromFlow, getDecisionTree: getDecisionTreeAsFlow };

@@ -23,6 +23,11 @@
   - context: ```{ "min_monthly_income": 20000 }```
   - lhs: `/monthly_income`, rhs: `/minimum_monthly_income`
 
+# APIs
+- get DT (id): dt
+- get DT as react flow(id): { id, graph }
+- save dt from flow(id, graph):
+
 # TODO
 - [x] Make it non domain specific, use `json path`
 - [ ] Make it a platform? Allow creation of mutliple DTs, with context

@@ -1,1 +1,61 @@
-{"description":"Is rich?","predicate":{"GTNumber":{"lhs":"/salary","rhs":"/min_salary"}},"value":null,"left":{"description":"U poe","predicate":"Default","value":"U poe","left":null,"right":null},"right":{"description":"Is old enough?","predicate":{"GTNumber":{"lhs":"/age","rhs":"/min_age"}},"value":null,"left":{"description":"You yung","predicate":"Default","value":"You yung","left":null,"right":null},"right":{"description":"Is good job?","predicate":{"InListOfString":{"lhs":"/occupation","rhs":"/good_occupations"}},"value":null,"left":{"description":"Bad job","predicate":"Default","value":"Bad job","left":null,"right":null},"right":{"description":"Approved","predicate":"Default","value":"Approved","left":null,"right":null}}}}
+{
+    "_id": "f651292b-ed64-4841-9c28-0b63d1d40ded",
+    "root": {
+        "description": "Is rich?",
+        "predicate": {
+            "GTNumber": {
+                "lhs": "/salary",
+                "rhs": "/min_salary"
+            }
+        },
+        "value": null,
+        "left": {
+            "description": "U poe",
+            "predicate": "Default",
+            "value": "U poe",
+            "left": null,
+            "right": null
+        },
+        "right": {
+            "description": "Is old enough?",
+            "predicate": {
+                "GTNumber": {
+                    "lhs": "/age",
+                    "rhs": "/min_age"
+                }
+            },
+            "value": null,
+            "left": {
+                "description": "You yung",
+                "predicate": "Default",
+                "value": "You yung",
+                "left": null,
+                "right": null
+            },
+            "right": {
+                "description": "Is good job?",
+                "predicate": {
+                    "InListOfString": {
+                        "lhs": "/occupation",
+                        "rhs": "/good_occupations"
+                    }
+                },
+                "value": null,
+                "left": {
+                    "description": "Bad job",
+                    "predicate": "Default",
+                    "value": "Bad job",
+                    "left": null,
+                    "right": null
+                },
+                "right": {
+                    "description": "Approved",
+                    "predicate": "Default",
+                    "value": "Approved",
+                    "left": null,
+                    "right": null
+                }
+            }
+        }
+    }
+}

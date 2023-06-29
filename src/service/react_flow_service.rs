@@ -1,4 +1,3 @@
-use crate::service::dt_service::DtService;
 use crate::domain::node::Node;
 use crate::dto::react_flow_dtos::*;
 
@@ -6,22 +5,14 @@ const X_STEP: f64 = 200.0;
 const Y_STEP: f64 = 100.0;
 
 #[derive(Clone)]
-pub struct ReactFlowService {
-    pub dt_service: DtService,
-}
+pub struct ReactFlowService {}
 
 impl ReactFlowService {
-    pub fn get_graph(&self) -> Graph {
-        let root = self.dt_service.get_dt();
+    pub async fn get_graph(&self, root: Node) -> Graph {
         let mut nodes: Vec<FlowNode> = Vec::new();
         let mut edges: Vec<FlowEdge>= Vec::new();
         self.populate_nodes_and_edges(&root, 1, &mut nodes, &mut edges);
         Graph{nodes, edges}
-    }
-
-    pub fn save_graph_as_dt(&self, graph: &Graph) {
-        let root = self.construct_root(&graph);
-        self.dt_service.save_dt(&root.unwrap())
     }
 
     fn populate_nodes_and_edges(&self, root: &Node, id: u32, nodes: &mut Vec<FlowNode>, edges: &mut Vec<FlowEdge>) {
@@ -51,19 +42,16 @@ impl ReactFlowService {
         }
     }
 
-    fn construct_root(&self, graph: &Graph) -> Option<Box<Node>> {
+    pub fn construct_root(&self, graph: &Graph) -> Option<Node> {
         let nodes = &graph.nodes;
         let edges = &graph.edges;
 
-        let root_node = nodes.iter().find(|node| !self.has_incoming_edge(node, edges));
-        if let Some(root_node) = root_node {
-            Some(self.construct_subtree(root_node, nodes, edges))
-        } else {
-            None
-        }
+        nodes.iter()
+             .find(|node| !self.has_incoming_edge(node, edges))
+             .map(|x| self.construct_subtree(x, nodes, edges))
     }
 
-    fn construct_subtree(&self, node: &FlowNode, nodes: &[FlowNode], edges: &[FlowEdge]) -> Box<Node> {
+    fn construct_subtree(&self, node: &FlowNode, nodes: &[FlowNode], edges: &[FlowEdge]) -> Node {
         let mut root = Node {
             description: node.data.description.clone(),
             predicate: node.data.predicate.clone(),
@@ -76,11 +64,11 @@ impl ReactFlowService {
         for edge in outgoing_edges {
             if let Some(target_node) = nodes.iter().find(|node| node.id == edge.target) {
                 let child_node = self.construct_subtree(target_node, nodes, edges);
-                root.link(*child_node, edge.label == Direction::LEFT);
+                root.link(child_node, edge.label == Direction::LEFT);
             }
         }
 
-        Box::new(root)
+        root
     }
 
     fn has_incoming_edge(&self, node: &FlowNode, edges: &[FlowEdge]) -> bool {

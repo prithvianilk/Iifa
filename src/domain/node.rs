@@ -1,3 +1,4 @@
+use mongodb::bson::{Bson, Document, to_document};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use crate::domain::predicate::{Predicate, evaluate};
@@ -18,6 +19,19 @@ pub struct Node {
 
     #[serde(default)]
     pub right: Option<Box<Node>>,
+}
+
+impl Default for Node {
+    fn default() -> Self {
+        Node { description: String::new(), predicate: Predicate::Default, value: Some(String::new()), left: None, right: None }
+    }
+}
+
+impl Into<Bson> for Node {
+    fn into(self) -> Bson {
+        let document: Document = to_document(&self).unwrap();
+        Bson::Document(document)
+    }
 }
 
 impl Node {
