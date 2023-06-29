@@ -25,9 +25,7 @@ impl DecisionTreeService {
     }
 
     fn safely_get_decision_tree(&self, value: Option<DecisionTree>) -> Result<DecisionTree, AppError> {
-        match value {
-            Some(value) => Ok(value),
-            None => Err(AppError::GetDecisonTreeFailed { message: "No decision tree with given _id".to_string() }),
-        }
+        value.map(|value| Ok(value))
+             .unwrap_or(Err(AppError::GetDecisonTreeFailed { message: "No decision tree with given _id".to_string() }))
     }
 }

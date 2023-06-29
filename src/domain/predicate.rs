@@ -1,4 +1,3 @@
-use chrono::{Local, TimeZone};
 use serde::{Serialize, Deserialize, de::DeserializeOwned};
 use serde_json::{Value, from_value};
 
@@ -56,11 +55,7 @@ where T: std::cmp::PartialOrd, T: DeserializeOwned {
 }
 
 fn evaluate_path<T>(path: &String, context: &Value) -> T where T: DeserializeOwned {
+    // TODO: Fix unchecked unwrap here
     let value = context.pointer(&path).unwrap().clone();
     from_value(value).unwrap()
-}
-
-fn is_date_before(x: &String, y: &String) -> bool {
-    let fmt = "%Y-%m-%d %H:%M:%S";
-    Local.datetime_from_str(&x, fmt).unwrap().timestamp_millis() < Local.datetime_from_str(&y, fmt).unwrap().timestamp_millis()
 }

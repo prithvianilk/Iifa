@@ -1,5 +1,14 @@
+use mongodb::bson::Uuid;
 use serde::{Serialize, Deserialize};
+use serde_json::Value;
 use crate::domain::predicate::Predicate;
+
+#[derive(Debug, Deserialize)]
+pub struct SaveDecisionTreeFromFlowRequest {
+    pub _id: Uuid,
+    pub graph: Graph,
+    pub context: Value,
+}
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Graph {

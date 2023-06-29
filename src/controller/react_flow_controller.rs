@@ -1,9 +1,8 @@
 use actix_web::{web, Responder, HttpResponse, get, put};
 use mongodb::bson::Uuid;
-use serde::Deserialize;
 use crate::app_data::AppData;
 use crate::domain::decision_tree::DecisionTree;
-use crate::dto::react_flow_dtos::Graph;
+use crate::dto::react_flow_dtos::SaveDecisionTreeFromFlowRequest;
 use crate::error::AppError;
 
 #[get("/react-flow/decision_trees/{_id}")]
@@ -27,24 +26,19 @@ pub async fn get_as_flow(_id: web::Path<String>, data: web::Data<AppData>) -> im
 
 #[put("/react-flow/decision_trees")]
 pub async fn save_from_flow(request: web::Json<SaveDecisionTreeFromFlowRequest>, data: web::Data<AppData>) -> impl Responder {
-    let graph = &request.graph;
     let _id = request._id;
+    let graph = &request.graph;
+    let context = &request.context;
     let dt_service = &data.decision_tree_service;
     let react_flow_service = &data.react_flow_service;
 
     match react_flow_service.construct_root(&graph) {
         Some(root) => {
-            match dt_service.upsert_decision_tree(&DecisionTree{ _id, root }).await {
+            match dt_service.upsert_decision_tree(&DecisionTree{ _id, root, context: context.clone() }).await {
                 Ok(_) => HttpResponse::Created().finish(),
                 Err(err) => err.to_http_response()
             }
         },
         None => HttpResponse::BadRequest().json(AppError::SaveDecisionTreeFailed{ message: "Invalid graph provided: Could not find a root node".to_string() })
     }
-}
-
-#[derive(Debug, Deserialize)]
-pub struct SaveDecisionTreeFromFlowRequest {
-    pub _id: Uuid,
-    pub graph: Graph
 }

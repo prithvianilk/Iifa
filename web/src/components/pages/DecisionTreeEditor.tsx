@@ -3,6 +3,13 @@ import ReactFlow, { Background, Controls, Edge, EdgeChange, Node, NodeChange, ad
 import 'reactflow/dist/style.css';
 import whompingWillowClient from '../../lib/whompingWillow.client';
 
+function getDecisionTreeId() {
+    const location = window.location.href;
+    const splits = location.split('/');
+    const decisionTreeId = splits.at(splits.length - 1) as string;
+    return decisionTreeId;
+}
+
 declare global {
     interface Window {
         edgeModal: HTMLDialogElement;
@@ -15,7 +22,7 @@ const predicates: Predicate[] = ["LTNumber", "GTNumber", "EQNumber", "EQString",
 const defaultPredicateData = { lhs: "", rhs: "" };
 
 const DecisionTreeEditor = () => {
-    const decisionTreeId = "f651292b-ed64-4841-9c28-0b63d1d40ded";
+    const decisionTreeId = getDecisionTreeId();
     const [nodes, setNodes] = useState<Node[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
     const onConnect = useCallback(
