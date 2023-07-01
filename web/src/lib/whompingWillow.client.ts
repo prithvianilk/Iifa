@@ -30,7 +30,6 @@ async function saveDecisionTreeFromFlow(decisionTree: DecisionTree) {
         .catch(console.log);
 }
 
-
 async function getDecisionTreeAsFlow(_id: String): Promise<Graph> {
     const url = `${whompingWillowServiceBaseUrl}/react-flow/decision_trees/${_id}`;
     return await fetch(url).then(resp => resp.json());
