@@ -31,3 +31,4 @@
 # TODO
 - [x] Make it non domain specific, use `json path`
 - [ ] Make it a platform? Allow creation of mutliple DTs, with context
+- [ ] Add [a nice JSON editor](https://sujinleeme.github.io/react-json-editor/)

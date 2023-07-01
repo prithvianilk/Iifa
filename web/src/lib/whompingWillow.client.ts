@@ -1,15 +1,15 @@
-import DecisionTree, { Graph } from "./DecisionTree";
+import DecisionTree, { GetDecisionTreeAsFlowResponse, Graph } from "./DecisionTree";
 
 const whompingWillowServiceBaseUrl = "http://localhost:8080";
 
-async function evaluate(customerParams: string) {
-    const url = `${whompingWillowServiceBaseUrl}/dt/evaluate`;
+async function evaluate(_id: string, inputContext: string) {
+    const url = `${whompingWillowServiceBaseUrl}/decision_trees/${_id}/evaluate`;
     await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: customerParams,
+        body: inputContext,
     })
         .then(response => response.json())
         .then(data => alert(data.result))
@@ -26,11 +26,10 @@ async function saveDecisionTreeFromFlow(decisionTree: DecisionTree) {
         body: JSON.stringify(decisionTree),
     })
         .then(response => response.json())
-        .then(data => console.log(data))
         .catch(console.log);
 }
 
-async function getDecisionTreeAsFlow(_id: String): Promise<Graph> {
+async function getDecisionTreeAsFlow(_id: String): Promise<GetDecisionTreeAsFlowResponse> {
     const url = `${whompingWillowServiceBaseUrl}/react-flow/decision_trees/${_id}`;
     return await fetch(url).then(resp => resp.json());
 }

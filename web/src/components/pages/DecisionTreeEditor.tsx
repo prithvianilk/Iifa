@@ -3,6 +3,10 @@ import ReactFlow, { Background, Controls, Edge, EdgeChange, Node, NodeChange, ad
 import 'reactflow/dist/style.css';
 import whompingWillowClient from '../../lib/whompingWillow.client';
 
+function getPrettyJSON(json: any) {
+    return JSON.stringify(json, null, 2);
+}
+
 function getDecisionTreeId() {
     const location = window.location.href;
     const splits = location.split('/');
@@ -34,6 +38,7 @@ const DecisionTreeEditor = () => {
     const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
     const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
 
+    const [context, setContext] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [isPredicate, setIsPredicate] = useState<boolean>(false);
     const [predicateType, setPredicateType] = useState<Predicate>("LTNumber");
@@ -42,17 +47,19 @@ const DecisionTreeEditor = () => {
     const [inputParams, setInputParams] = useState<string>("");
 
     const saveDecisionTree = () => {
-        const decisionTree = { _id: decisionTreeId, graph: { nodes, edges } };
+        const decisionTree = { _id: decisionTreeId, graph: { nodes, edges }, context: JSON.parse(context) };
         whompingWillowClient.saveDecisionTree(decisionTree);
     }
 
-    const evaluate = () => whompingWillowClient.evaluate(inputParams);
+    const evaluate = () => whompingWillowClient.evaluate(decisionTreeId, inputParams);
 
     useState(() => {
         whompingWillowClient.getDecisionTree(decisionTreeId)
-            .then(({ nodes, edges }) => {
+            .then((response) => {
+                const { graph: { nodes, edges }, context } = response;
                 setNodes(nodes);
                 setEdges(edges);
+                setContext(getPrettyJSON(context)); // options to prettig
             });
     });
 
@@ -63,7 +70,7 @@ const DecisionTreeEditor = () => {
     };
 
     return (
-        <div className='p-5' style={{ display: 'flex', height: '100vh' }}>
+        <div className='py-4 px-2 flex h-screen'>
             <div className='p-2 w-4/5'>
                 <ReactFlow
                     nodes={nodes}
@@ -77,7 +84,7 @@ const DecisionTreeEditor = () => {
                     <Controls />
                 </ReactFlow>
             </div>
-            <div className='p-2 h-screen w-1/5'>
+            <div className='py-2 pl-2 pr-10 h-full w-1/5 overflow-y-auto'>
                 <div className='my-2'>
                     <label>Description</label>
                     <input type="text" placeholder="Type here" className="mt-3 input w-full max-w-xs" value={description} onChange={(e) => setDescription(e.target.value)} />
@@ -136,10 +143,11 @@ const DecisionTreeEditor = () => {
                 }}>
                     Create Node
                 </button>
+                <textarea className="textarea h-1/4 mt-10 w-full" placeholder="Enter context here" value={context} onChange={e => setContext(e.target.value)} />
                 <button className="mt-6 btn w-full" onClick={saveDecisionTree}>
                     Save Tree
                 </button>
-                <textarea className="textarea mt-10 w-full" placeholder="Enter input data here" value={inputParams} onChange={e => setInputParams(e.target.value)} />
+                <textarea className="textarea h-1/4 mt-10 w-full" placeholder="Enter input data here" value={inputParams} onChange={e => setInputParams(e.target.value)} />
                 <button className="mt-6 btn w-full" onClick={evaluate}>
                     Evaluate
                 </button>

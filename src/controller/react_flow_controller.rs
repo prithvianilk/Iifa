@@ -2,7 +2,7 @@ use actix_web::{web, Responder, HttpResponse, get, put};
 use mongodb::bson::Uuid;
 use crate::app_data::AppData;
 use crate::domain::decision_tree::DecisionTree;
-use crate::dto::react_flow_dtos::SaveDecisionTreeFromFlowRequest;
+use crate::dto::react_flow_dtos::{SaveDecisionTreeFromFlowRequest, GetDecisionTreeAsFlowResponse};
 use crate::error::AppError;
 
 #[get("/react-flow/decision_trees/{_id}")]
@@ -15,7 +15,7 @@ pub async fn get_as_flow(_id: web::Path<String>, data: web::Data<AppData>) -> im
             match dt_service.get_decision_tree_by_id(&_id).await {
                 Ok(decision_tree) => {
                     let graph = react_flow_service.get_graph(decision_tree.root).await;
-                    HttpResponse::Ok().json(graph)
+                    HttpResponse::Ok().json(GetDecisionTreeAsFlowResponse{graph, context: decision_tree.context})
                 },
                 Err(err) => HttpResponse::InternalServerError().json(err)
             }
