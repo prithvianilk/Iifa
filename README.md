@@ -43,7 +43,7 @@ whomping-willow is a platform that allows you to create, edit and maintain compl
 - `InListOfString`: Checks if `lhs` = `rhs` (`lhs` is a string, `rhs` is a list of strings)
 
 ## An example decision tree for a bank application
-<img width="1717" alt="Screenshot 2023-06-26 at 4 29 12 AM" src="https://github.com/prithvianilk/whomping-willow/assets/56789402/b0ef695c-b00c-431b-a6cf-7314049195c2">
+<img width="1703" alt="Screenshot 2023-07-01 at 12 45 22 PM" src="https://github.com/prithvianilk/whomping-willow/assets/56789402/b49229a0-1f0a-4293-ad36-c8d57cf464a6">
 
 ## TODO
 - [x] Make it non domain specific, use `json path`
