@@ -15,7 +15,12 @@ pub async fn get_as_flow(_id: web::Path<String>, data: web::Data<AppData>) -> im
             match dt_service.get_decision_tree_by_id(&_id).await {
                 Ok(decision_tree) => {
                     let graph = react_flow_service.get_graph(decision_tree.root).await;
-                    HttpResponse::Ok().json(GetDecisionTreeAsFlowResponse{graph, context: decision_tree.context})
+                    let response = GetDecisionTreeAsFlowResponse{
+                        graph, 
+                        description: decision_tree.description, 
+                        context: decision_tree.context
+                    };
+                    HttpResponse::Ok().json(response)
                 },
                 Err(err) => HttpResponse::InternalServerError().json(err)
             }
@@ -34,7 +39,8 @@ pub async fn save_from_flow(request: web::Json<SaveDecisionTreeFromFlowRequest>,
 
     match react_flow_service.construct_root(&graph) {
         Some(root) => {
-            match dt_service.upsert_decision_tree(&DecisionTree{ _id, root, context: context.clone() }).await {
+            let decision_tree = DecisionTree{ _id, root, description: request.description.clone(), context: context.clone() };
+            match dt_service.upsert_decision_tree(&decision_tree).await {
                 Ok(_) => HttpResponse::Created().finish(),
                 Err(err) => err.to_http_response()
             }

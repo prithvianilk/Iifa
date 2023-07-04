@@ -5,8 +5,19 @@ use crate::domain::decision_tree::DecisionTree;
 use crate::dto::decision_tree_dtos::{UpdateDecisionTreeRequest, EvaluateRequest, EvaluateResponse, CreateDecisionTreeRequest};
 use crate::error::AppError;
 
+// Improvement: Fetch only id and desc
+#[get("/decision_trees")]
+pub async fn get_all_decision_trees(data: web::Data<AppData>) -> impl Responder {
+    let decision_tree_service = &data.decision_tree_service;
+    
+    match decision_tree_service.get_all_decision_trees().await {
+        Ok(decision_trees) => HttpResponse::Ok().json(decision_trees),
+        Err(err) => err.to_http_response()
+    }
+}
+
 #[get("/decision_trees/{_id}")]
-pub async fn get(_id: web::Path<String>, data: web::Data<AppData>) -> impl Responder {
+pub async fn get_by_id(_id: web::Path<String>, data: web::Data<AppData>) -> impl Responder {
     let decision_tree_service = &data.decision_tree_service;
 
     match Uuid::parse_str(_id.to_string()) {
@@ -23,7 +34,12 @@ pub async fn get(_id: web::Path<String>, data: web::Data<AppData>) -> impl Respo
 pub async fn create(request: web::Json<CreateDecisionTreeRequest>, data: web::Data<AppData>) -> impl Responder {
     let decision_tree_service = &data.decision_tree_service;
     
-    let decision_tree = &DecisionTree { _id: Uuid::new(), root: request.root.clone(), context: request.context.clone() };
+    let decision_tree = &DecisionTree { 
+        _id: Uuid::new(), 
+        root: request.root.clone(), 
+        description: request.description.clone(), 
+        context: request.context.clone() 
+    };
     match decision_tree_service.upsert_decision_tree(&decision_tree).await {
         Ok(_) => HttpResponse::Created().json(decision_tree),
         Err(err) => err.to_http_response()
@@ -36,7 +52,12 @@ pub async fn update(request: web::Json<UpdateDecisionTreeRequest>, data: web::Da
 
     match Uuid::parse_str(request._id.to_string()) {
         Ok(_id) => {
-            let decision_tree = &DecisionTree { _id, root: request.root.clone(), context: request.context.clone() };
+            let decision_tree = &DecisionTree { 
+                _id, 
+                root: request.root.clone(), 
+                description: request.description.clone(), 
+                context: request.context.clone() 
+            };
             match decision_tree_service.upsert_decision_tree(decision_tree).await {
                 Ok(_) => HttpResponse::Ok().json(decision_tree),
                 Err(err) => HttpResponse::InternalServerError().json(err)

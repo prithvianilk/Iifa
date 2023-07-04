@@ -25,7 +25,7 @@ const predicates: Predicate[] = ["LTNumber", "GTNumber", "EQNumber", "EQString",
 
 const defaultPredicateData = { lhs: "", rhs: "" };
 
-const DecisionTreeEditor = () => {
+const DecisionTreeEditorPage = () => {
     const decisionTreeId = getDecisionTreeId();
     const [nodes, setNodes] = useState<Node[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
@@ -37,6 +37,7 @@ const DecisionTreeEditor = () => {
     const [selectedEdgeDirection, setSelectedEdgeDirection] = useState<string>("");
     const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
     const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
+    const [decisionTreeDescription, setDecisionTreeDescription] = useState<string>("");
 
     const [context, setContext] = useState<string>("");
     const [description, setDescription] = useState<string>("");
@@ -47,19 +48,20 @@ const DecisionTreeEditor = () => {
     const [inputParams, setInputParams] = useState<string>("");
 
     const saveDecisionTree = () => {
-        const decisionTree = { _id: decisionTreeId, graph: { nodes, edges }, context: JSON.parse(context) };
-        whompingWillowClient.saveDecisionTree(decisionTree);
+        const decisionTree = { _id: decisionTreeId, description: decisionTreeDescription, graph: { nodes, edges }, context: JSON.parse(context) };
+        whompingWillowClient.saveDecisionTreeFromFlow(decisionTree);
     }
 
     const evaluate = () => whompingWillowClient.evaluate(decisionTreeId, inputParams);
 
     useState(() => {
-        whompingWillowClient.getDecisionTree(decisionTreeId)
+        whompingWillowClient.getDecisionTreeAsFlow(decisionTreeId)
             .then((response) => {
-                const { graph: { nodes, edges }, context } = response;
+                const { graph: { nodes, edges }, context, description } = response;
                 setNodes(nodes);
                 setEdges(edges);
-                setContext(getPrettyJSON(context)); // options to prettig
+                setDecisionTreeDescription(description);
+                setContext(getPrettyJSON(context));
             });
     });
 
@@ -169,4 +171,4 @@ const DecisionTreeEditor = () => {
     );
 }
 
-export default DecisionTreeEditor;
+export default DecisionTreeEditorPage;

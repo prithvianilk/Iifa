@@ -9,6 +9,9 @@ pub struct DecisionTree {
     pub _id: Uuid,
 
     #[serde(default)]
+    pub description: String,
+
+    #[serde(default)]
     pub root: Node,
 
     #[serde(default)]

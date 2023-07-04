@@ -1,9 +1,25 @@
 import React from "react";
-import DecisionTreeEditor from "./components/pages/DecisionTreeEditor";
 import './index.css';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import DecisionTreeTablePage from "./components/pages/DecisionTreeTablePage";
+import DecisionTreeEditorPage from "./components/pages/DecisionTreeEditorPage";
 
-function App() {
-  return <DecisionTreeEditor />
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <DecisionTreeTablePage />
+  },
+  {
+    path: "/:decision_tree_id",
+    element: <DecisionTreeEditorPage />
+  },
+]);
+
+const App = () => {
+  return <RouterProvider router={router} />
 }
 
 export default App;

@@ -6,12 +6,14 @@ use crate::domain::predicate::Predicate;
 #[derive(Debug, Serialize)]
 pub struct GetDecisionTreeAsFlowResponse {
     pub graph: Graph,
+    pub description: String,
     pub context: Value
 }
 
 #[derive(Debug, Deserialize)]
 pub struct SaveDecisionTreeFromFlowRequest {
     pub _id: Uuid,
+    pub description: String,
     pub graph: Graph,
     pub context: Value,
 }

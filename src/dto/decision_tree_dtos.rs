@@ -1,4 +1,3 @@
-use mongodb::bson::Uuid;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use crate::domain::node::Node;
@@ -6,6 +5,8 @@ use crate::domain::node::Node;
 #[derive(Debug, Deserialize)]
 pub struct CreateDecisionTreeRequest {
     pub root: Node,
+
+    pub description: String,
 
     #[serde(default)]
     pub context: Value,
@@ -17,6 +18,8 @@ pub struct UpdateDecisionTreeRequest {
 
     #[serde(default)]
     pub root: Node,
+
+    pub description: String,
 
     #[serde(default)]
     pub context: Value,
