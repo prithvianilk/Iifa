@@ -7,7 +7,6 @@ whomping-willow is a platform that allows you to create, edit and maintain compl
 - Create value nodes as final results of the tree evaluation.
 - Link nodes to create powerful decision trees.
 - You can provide input parameters used to evaluate the decision tree at runtime.
-- The project is a wip rn.
 - Also, rust gang gang.
 
 ## whomping-willow as a platform
@@ -21,7 +20,7 @@ whomping-willow is a platform that allows you to create, edit and maintain compl
 ### Example: 
   input params: 
   ```
-  { "monthly_income": 10000 }
+  { "monthly_income": 30000 }
   ``` 
   context: 
   ```
@@ -32,7 +31,9 @@ whomping-willow is a platform that allows you to create, edit and maintain compl
   }
   ```
  You would create your predicate with paths as following.
+
  lhs: `/monthly_income`
+
  rhs: `/account_details/min_monthly_income`
 
 ## Predicates
