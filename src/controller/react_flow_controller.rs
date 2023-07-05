@@ -22,7 +22,7 @@ pub async fn get_as_flow(_id: web::Path<String>, data: web::Data<AppData>) -> im
                     };
                     HttpResponse::Ok().json(response)
                 },
-                Err(err) => HttpResponse::InternalServerError().json(err)
+                Err(err) => err.to_http_response()
             }
         },
         Err(err) => HttpResponse::BadRequest().json(AppError::GetDecisonTreeFailed { message: err.to_string() })
